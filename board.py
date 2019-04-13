@@ -30,9 +30,6 @@ class Board(object):
         freePositions=self.getAllFreePositions()
         return len(freePositions)==0
 
-
-    #TODO implement
-
     def checkRow(self,row):
         brd=self.board
         if(brd[row*3]==brd[row*3+1]==brd[row*3+2]):
