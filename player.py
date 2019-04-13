@@ -4,5 +4,5 @@ class Player(object):
         self.board=board
         self.sign=sign
 
-    def nextMove(self):
+    def nextMove(self,verbose):
         return NotImplementedError
