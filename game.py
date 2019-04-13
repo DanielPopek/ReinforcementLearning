@@ -19,14 +19,21 @@ class Game(object):
 
     def playGame(self):
         move=0
-        while not self.board.isFull():
+        winner=-1
+        while winner==-1 and not self.board.isFull():
             print(f'TURN: {move}')
             action=self.playerActive.nextMove()
             self.board.board[action]=self.playerActive.sign
             self.switchPlayers()
+            winner=board.getWinningSign()
             move+=1
-        print(self.board.board)
-        print(f' THE WINNER IS: {self.getWinner(self.board.getWinningSign())}')
+        self.board.printBoardFormatted()
+        self.board.printBoard()
+        if(board.getWinningSign()!=-1):
+            sign=self.board.getWinningSign()
+            print(f' THE WINNER IS: {self.getWinner(sign)} WITH SIGN {sign}')
+        else:
+            print('DRAW')
 
     def getWinner(self,sign):
         if player1.sign==sign:
