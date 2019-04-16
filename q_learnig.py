@@ -17,7 +17,7 @@ class QLearning(object):
 
     ALPHA = 0.7
     GAMMA = 0.95
-    INITIALIZING_VALUE = 0.5  # 1 - optimistic, 0 - pessimistic, 0.5 normal (draw)
+    INITIALIZING_VALUE = 0.2  # 1 - optimistic, 0 - pessimistic, 0.5 normal (draw)
 
     def __init__(self):
         self.state_action_dict = self.generateStatesActionsDict()

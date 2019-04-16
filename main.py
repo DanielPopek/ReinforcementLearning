@@ -26,11 +26,13 @@ def single_testing_game(q_test, single_q_player=True, verbose=False):
 
     game = Game(board, x, o)
     game.playGame(verbose, q_test)
+
+    q_test.trainOnSingleGame(game, verbose=verbose)
     return game.board.getWinningSign()
 
 
 def play_train_games():
-    TRAIN_COUNT = 100000
+    TRAIN_COUNT = 200000
     TEST_COUNT = 1000
 
     q_learning = QLearning()
@@ -48,8 +50,17 @@ def play_train_games():
         winner = single_testing_game(q_learning, verbose=False, single_q_player=True)
         wins[winner + 1] += 1
 
-    print('\nWINNING STATISTICS')
+    print('\nWINNING STATISTICS FOR RANDOM')
     print(f'X wins: {wins[2]}\nO wins: {wins[0]}\nDraws:  {wins[1]}')
+
+    wins = [0, 0, 0]
+    for i in range(TEST_COUNT):
+        winner = single_testing_game(q_learning, verbose=False, single_q_player=False)
+        wins[winner + 1] += 1
+
+    print('\nWINNING STATISTICS FOR BOTH Q LEARNING PLAYERS')
+    print(f'X wins: {wins[2]}\nO wins: {wins[0]}\nDraws:  {wins[1]}')
+
 
     # for i in range(TEST_COUNT):
     #     board = Board()
@@ -61,7 +72,6 @@ def play_train_games():
 
 if __name__ == "__main__":
     play_train_games()
-
 
     # board = Board()
     # x = RandomPlayer(board, CROSS)

@@ -63,12 +63,12 @@ class Game(object):
         else:
             return self.player2
 
-    def prepareSampleGame(self):
-        board = Board()
-        player1 = RandomPlayer("Random1", board, 0)
-        player2 = RandomPlayer("Random2", board, 1)
-        game = Game(board, player1, player2)
-        return game
+    # def prepareSampleGame(self):
+    #     board = Board()
+    #     player1 = RandomPlayer("Random1", board, 0)
+    #     player2 = RandomPlayer("Random2", board, 1)
+    #     game = Game(board, player1, player2)
+    #     return game
 
 # board= Board()
 # player1=RandomPlayer("Random1",board,0)
