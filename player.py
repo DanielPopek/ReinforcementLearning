@@ -9,5 +9,5 @@ class Player(object):
         self.board = board
         self.sign = sign
 
-    def next_move(self, verbose):
+    def next_move(self, qlearning=None, verbose=False):
         return NotImplementedError

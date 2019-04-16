@@ -34,13 +34,13 @@ class Game(object):
             hash = board.getRevertHash()
         history.append((hash, action))
 
-    def playGame(self, verbose):
+    def playGame(self, verbose, q_learning_table=None):
         move = 0
         winner = UNKNOWN
         while winner == UNKNOWN and not self.board.isFull():
             # if verbose:
             #     print(f'TURN: {move}')
-            action = self.playerActive.nextMove(verbose)
+            action = self.playerActive.nextMove(q_learning_table, verbose)
             self.putHistoryTuple(self.playerActive, self.board, action)
             self.board.board[action] = self.playerActive.sign
             self.switchPlayers()
