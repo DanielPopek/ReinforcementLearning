@@ -5,6 +5,9 @@ from q_learnig import QLearning
 from q_learning_player import QLearningPlayer
 from random_player import RandomPlayer
 
+import ast
+import pickle
+
 
 def single_training_game(q_test, verbose=False):
     board = Board()
@@ -18,7 +21,7 @@ def single_training_game(q_test, verbose=False):
 
 def single_testing_game(q_test, single_q_player=True, verbose=False):
     board = Board()
-    x = QLearningPlayer(board, CROSS)
+    x = RandomPlayer(board, CROSS)
     if single_q_player:
         o = RandomPlayer(board, OH)
     else:
@@ -32,7 +35,7 @@ def single_testing_game(q_test, single_q_player=True, verbose=False):
 
 
 def play_train_games():
-    TRAIN_COUNT = 200000
+    TRAIN_COUNT = 100000
     TEST_COUNT = 1000
 
     q_learning = QLearning()
@@ -47,19 +50,19 @@ def play_train_games():
     print('\nTesting...')
     wins = [0, 0, 0]
     for i in range(TEST_COUNT):
-        winner = single_testing_game(q_learning, verbose=False, single_q_player=True)
+        winner = single_testing_game(q_learning, verbose=False, single_q_player=False)
         wins[winner + 1] += 1
 
     print('\nWINNING STATISTICS FOR RANDOM')
     print(f'X wins: {wins[2]}\nO wins: {wins[0]}\nDraws:  {wins[1]}')
 
-    wins = [0, 0, 0]
-    for i in range(TEST_COUNT):
-        winner = single_testing_game(q_learning, verbose=False, single_q_player=False)
-        wins[winner + 1] += 1
-
-    print('\nWINNING STATISTICS FOR BOTH Q LEARNING PLAYERS')
-    print(f'X wins: {wins[2]}\nO wins: {wins[0]}\nDraws:  {wins[1]}')
+    # wins = [0, 0, 0]
+    # for i in range(TEST_COUNT):
+    #     winner = single_testing_game(q_learning, verbose=False, single_q_player=False)
+    #     wins[winner + 1] += 1
+    #
+    # print('\nWINNING STATISTICS FOR BOTH Q LEARNING PLAYERS')
+    # print(f'X wins: {wins[2]}\nO wins: {wins[0]}\nDraws:  {wins[1]}')
 
 
     # for i in range(TEST_COUNT):
@@ -71,15 +74,22 @@ def play_train_games():
 
 
 if __name__ == "__main__":
-    play_train_games()
 
-    # board = Board()
-    # x = RandomPlayer(board, CROSS)
-    # o = RandomPlayer(board, OH)
-    #
-    # game = Game(board, x, o)
-    # game.playGame(True)
-    #
-    # q_test = QLearning()
-    # q_test.trainOnSingleGame(game, verbose=True)
+    TRAIN_COUNT = 500000
 
+    q_learning = QLearning()
+    for i in range(TRAIN_COUNT):
+        if i % 10000 == 9999:
+            print(i+1, 'iteration')
+        single_training_game(q_learning)
+
+    boards, values = [], []
+    for key, val in q_learning.state_action_dict.items():
+        boards.append(ast.literal_eval(key))
+        values.append(val)
+
+    with open('boards_' + str(TRAIN_COUNT), 'wb') as f:
+        pickle.dump(boards, f)
+
+    with open('values_' + str(TRAIN_COUNT), 'wb') as f:
+        pickle.dump(values, f)

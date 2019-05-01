@@ -94,9 +94,9 @@ class QLearning(object):
     #
     #     return p2_reversed_hist
 
-    def update_Qlearning_based_on_player_history(self, player_history, winning_price, verbose=False):
+    def update_Qlearning_based_on_player_history(self, player_history, winning_prize, verbose=False):
         last_move_state, last_move_action = player_history[0]
-        self.state_action_dict[str(last_move_state)][last_move_action] = (winning_price + 1)/2
+        self.state_action_dict[str(last_move_state)][last_move_action] = (winning_prize + 1) / 2
         if verbose:
             print(self.state_action_dict[str(last_move_state)])
 

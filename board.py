@@ -51,7 +51,7 @@ class Board(object):
 
     def checkColumn(self, column):
         brd = self.board
-        if (brd[column] == brd[3 + column] == brd[6 + column]):
+        if brd[column] == brd[3 + column] == brd[6 + column]:
             return brd[column]
         else:
             return UNKNOWN
@@ -66,14 +66,14 @@ class Board(object):
 
     def checkDiagonalLeftUp(self):
         brd = self.board
-        if (brd[0] == brd[4] == brd[8]):
+        if brd[0] == brd[4] == brd[8]:
             return brd[0]
         else:
             return UNKNOWN
 
     def checkDiagonalRightUp(self):
         brd = self.board
-        if (brd[2] == brd[4] == brd[6]):
+        if brd[2] == brd[4] == brd[6]:
             return brd[2]
         else:
             return UNKNOWN
@@ -95,10 +95,9 @@ class Board(object):
         board = ["x" if char == CROSS else ("o" if char == OH else " ") for char in self.board]
         # formatted = np.zeros(shape=(3, 3))
         for i in range(3):
-            print(board[0 + i*3: 3 + i*3])
+            print(board[0 + i * 3: 3 + i * 3])
         # formatted[0] = np.array(self.board[0:3])
         # formatted[1] = np.array(self.board[3:6])
         # formatted[2] = np.array(self.board[6:])
         # print(formatted)
         # return formatted
-
