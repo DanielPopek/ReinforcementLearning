@@ -11,3 +11,6 @@ class Player(object):
 
     def next_move(self, qlearning=None, verbose=False):
         return NotImplementedError
+
+    def setBoard(self,board):
+        self.board=board
