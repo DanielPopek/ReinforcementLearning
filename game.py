@@ -76,4 +76,4 @@ class Game(object):
 # player2 = RandomPlayer("Random2", board, 1)
 # game=Game(board,player1,player2)
 #
-# game.playGame(True)
+# game.play_game(True)
