@@ -2,6 +2,8 @@ from board import Board
 from player import UNKNOWN, CROSS, OH
 from random_player import RandomPlayer
 
+import numpy as np
+
 
 class Game(object):
 
@@ -34,13 +36,11 @@ class Game(object):
             hash = board.getRevertHash()
         history.append((hash, action))
 
-    def playGame(self, verbose, q_learning_table=None):
+    def play_game(self, verbose, q_learning_table=None):
         move = 0
         winner = UNKNOWN
         while winner == UNKNOWN and not self.board.isFull():
-            # if verbose:
-            #     print(f'TURN: {move}')
-            action = self.playerActive.nextMove(q_learning_table, verbose)
+            action = self.playerActive.next_move(q_learning_table, verbose)
             self.putHistoryTuple(self.playerActive, self.board, action)
             self.board.board[action] = self.playerActive.sign
             self.switchPlayers()
@@ -62,17 +62,3 @@ class Game(object):
             return self.player1
         else:
             return self.player2
-
-    # def prepareSampleGame(self):
-    #     board = Board()
-    #     player1 = RandomPlayer("Random1", board, 0)
-    #     player2 = RandomPlayer("Random2", board, 1)
-    #     game = Game(board, player1, player2)
-    #     return game
-
-# board= Board()
-# player1=RandomPlayer("Random1",board,0)
-# player2 = RandomPlayer("Random2", board, 1)
-# game=Game(board,player1,player2)
-#
-# game.playGame(True)

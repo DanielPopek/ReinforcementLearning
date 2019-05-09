@@ -6,7 +6,7 @@ class QLearningPlayer(Player):
     def __init__(self, board, sign):
         Player.__init__(self, "x" if sign == CROSS else "o", board, sign)
 
-    def nextMove(self, qlearning, verbose=False):
+    def next_move(self, qlearning, verbose=False):
         board = self.board.board
         if self.sign == OH:  # reverse values for OH sign player
             board = list(np.asarray(board) * -1)

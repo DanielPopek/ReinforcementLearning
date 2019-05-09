@@ -1,72 +1,50 @@
-from board import Board
-from game import Game
-from player import CROSS, OH
-from q_learnig import QLearning
+from nn_player import NNPlayer
+from training_functions import *
 from q_learning_player import QLearningPlayer
 from deep_q_learning_player import DeepQLearningPlayer
 from random_player import RandomPlayer
 
-import ast
-import pickle
+import tensorflow.python.util.deprecation as deprecation
+deprecation._PRINT_DEPRECATION_WARNINGS = False
 
 
-def single_training_game(q_test, verbose=False):
+def get_player_type(player):
+    return player.__class__
+
+
+def print_winning_statistics(wins, deep_learning_player_type=''):
+    print(f'\nWINNING STATISTICS ' + (f'for {deep_learning_player_type}' if deep_learning_player_type != ''
+                                      else 'for QLearning'))
+    print(f'X wins: {wins[2]}'
+          f'\nO wins: {wins[0]}'
+          f'\nDraws:  {wins[1]}')
+
+
+''' Q learning '''
+
+
+def single_qlearning_testing_game(q_test, x_qlearning=True, single_q_player=True, verbose=False):
     board = Board()
-    x = RandomPlayer(board, CROSS)
-    o = RandomPlayer(board, OH)
-    game = Game(board, x, o)
-    game.playGame(verbose=verbose)
+    if not x_qlearning and single_q_player:
+        x = RandomPlayer(board, CROSS)
+    else:
+        x = QLearningPlayer(board, CROSS)
 
-    q_test.trainOnSingleGame(game, verbose=verbose)
-
-
-def single_testing_game(q_test, single_q_player=True, verbose=False):
-    board = Board()
-    x = RandomPlayer(board, CROSS)
-    if single_q_player:
+    if single_q_player and x_qlearning:
         o = RandomPlayer(board, OH)
     else:
         o = QLearningPlayer(board, OH)
 
     game = Game(board, x, o)
-    game.playGame(verbose, q_test)
+    game.play_game(verbose, q_test)
 
+    # train qlearning table some more
     q_test.trainOnSingleGame(game, verbose=verbose)
     return game.board.getWinningSign()
 
-def single_testing_game_deep_player( player, verbose=False):
-    board = Board()
-    x = RandomPlayer(board, CROSS)
-    o = player
-    o.setBoard(board)
 
-    game = Game(board, x, o)
-    game.playGame(verbose)
-
-    return game.board.getWinningSign()
-
-
-def play_test_games_deep_player():
-    TEST_COUNT = 1000
-    board = Board()
-    q_learning_player = DeepQLearningPlayer(board, OH)
-    q_learning_player.train_model()
-
-    # TEST
-    print('\nTesting...')
-    wins = [0, 0, 0]
-    for i in range(TEST_COUNT):
-        winner = single_testing_game_deep_player(q_learning_player, verbose=False)
-        wins[winner + 1] += 1
-
-    print('\nWINNING STATISTICS FOR RANDOM')
-    print(f'X wins: {wins[2]}\nO wins: {wins[0]}\nDraws:  {wins[1]}')
-
-
-
-
-def play_train_games():
-    TRAIN_COUNT = 100000
+def play_qlearning_train_and_test_games(train_count=3000):
+    TRAIN_COUNT = train_count
     TEST_COUNT = 1000
 
     q_learning = QLearning()
@@ -75,59 +53,74 @@ def play_train_games():
     for i in range(TRAIN_COUNT):
         if i % 5000 == 4999:
             print('  ', i+1, 'iteration')
-        single_training_game(q_learning)
+        single_qlearning_training_game(q_learning)
 
     # TEST
     print('\nTesting...')
     wins = [0, 0, 0]
     for i in range(TEST_COUNT):
-        winner = single_testing_game(q_learning, verbose=False, single_q_player=False)
+        winner = single_qlearning_testing_game(q_learning, verbose=False, single_q_player=False)
+        wins[winner + 1] += 1
+    print_winning_statistics(wins)
+
+
+''' Deep Q learning - sklearn and keras '''
+
+
+def single_deep_qlearning_testing_game(player, x_deep_player=True, verbose=False):
+    board = Board()
+
+    if x_deep_player:
+        x = player
+        x.setBoard(board)
+        o = RandomPlayer(board, OH)
+    else:
+        x = RandomPlayer(board, CROSS)
+        o = player
+        o.setBoard(board)
+
+    game = Game(board, x, o)
+    game.play_game(verbose)
+
+    return game.board.getWinningSign()
+
+
+def play_deep_qlearning_test_games(deep_learning_player_type='DeepQLearning', train_count=3000,
+                                   is_deep_player_cross=True, verbose=True):
+    TEST_COUNT = 1000
+
+    if verbose:
+        print('\nTraining...')
+    board = Board()
+    if deep_learning_player_type == 'DeepQLearning':
+        player = DeepQLearningPlayer(board, CROSS if is_deep_player_cross else OH, train_count)
+    if deep_learning_player_type == 'NN':
+        player = NNPlayer(board, CROSS if is_deep_player_cross else OH, train_count)
+    player.train_model()
+
+    if verbose:
+        print('Testing...')
+    wins = [0, 0, 0]
+    for i in range(TEST_COUNT):
+        winner = single_deep_qlearning_testing_game(player, x_deep_player=is_deep_player_cross, verbose=False)
         wins[winner + 1] += 1
 
-    print('\nWINNING STATISTICS FOR RANDOM')
-    print(f'X wins: {wins[2]}\nO wins: {wins[0]}\nDraws:  {wins[1]}')
+    if verbose:
+        print_winning_statistics(wins, deep_learning_player_type)
 
-    # wins = [0, 0, 0]
-    # for i in range(TEST_COUNT):
-    #     winner = single_testing_game(q_learning, verbose=False, single_q_player=False)
-    #     wins[winner + 1] += 1
-    #
-    # print('\nWINNING STATISTICS FOR BOTH Q LEARNING PLAYERS')
-    # print(f'X wins: {wins[2]}\nO wins: {wins[0]}\nDraws:  {wins[1]}')
-
-
-    # for i in range(TEST_COUNT):
-    #     board = Board()
-    #     x = RandomPlayer(board, CROSS)
-    #     o = QLearning(board, OH)
-    #     game = Game(board, x, o)
-    #     game.playGame(True)
-
-def saveTrainingDataToFile():
-    TRAIN_COUNT = 3000
-
-    q_learning = QLearning()
-    for i in range(TRAIN_COUNT):
-        if i % 1000 == 999:
-            print(i + 1, 'iteration')
-        single_training_game(q_learning)
-
-    boards, values = [], []
-    for key, val in q_learning.state_action_dict.items():
-        boards.append(ast.literal_eval(key))
-        values.append(val)
-
-    with open('boards_' + str(TRAIN_COUNT), 'wb') as f:
-        pickle.dump(boards, f)
-        print(boards)
-
-    with open('values_' + str(TRAIN_COUNT), 'wb') as f:
-        pickle.dump(values, f)
-        print(values)
+    return wins
 
 
 if __name__ == "__main__":
-    play_train_games()
-    play_test_games_deep_player()
+    #
+    # play_train_games()
+    # play_test_games_deep_player()
     # saveTrainingDataToFile()
+
+    play_qlearning_train_and_test_games()
+
+    deep_learning_player_types = ['DeepQLearning', 'NN']
+    play_deep_qlearning_test_games(deep_learning_player_type=deep_learning_player_types[0])
+    play_deep_qlearning_test_games(deep_learning_player_type=deep_learning_player_types[1])
+
 

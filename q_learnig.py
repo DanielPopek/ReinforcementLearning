@@ -22,15 +22,6 @@ class QLearning(object):
     def __init__(self):
         self.state_action_dict = self.generateStatesActionsDict()
 
-    # def initializePesimistic(self):
-    #     return [0 for i in range(9)]
-    #
-    # def initializeOptimistic(self):
-    #     return [1 for i in range(9)]
-
-    # Cartesian product
-    # TODO think over if cartesian product is necessary -> maybe sytaes collection could be simplified :)
-    # creates the matrix in field
     def generateAllStates(self):
         allStates = list(product([-1, 0, 1], repeat=9))
         allStatesLists = [list(i) for i in allStates]
@@ -42,20 +33,14 @@ class QLearning(object):
         for l in allStatesLists:
             q_values = [self.INITIALIZING_VALUE if i == UNKNOWN else -1 for i in l]
             statesActionsDict[str(l)] = q_values
-            # print(q_values)
-            # print(statesActionsDict.get(str(l)))
         return statesActionsDict
 
-    # TODO verify !!!!
     def update_Qvalue_for_state_from(self, stateFrom_action_stateTo, verbose=False):
         state_from, action, state_to = stateFrom_action_stateTo
         q_values_from = self.state_action_dict[state_from]
         q_values_to = self.state_action_dict[state_to]
         max_value = np.max(q_values_to)
-        # print(max_value)
-        # for i in range(len(q_values)):
-        #     if q_values[i] != -1:
-        #         q_values[i] = (1 - self.ALPHA) * q_values[i] + self.ALPHA * self.GAMMA * max_value
+
         new_q_value = (1 - self.ALPHA) * q_values_from[action] + self.ALPHA * self.GAMMA * max_value
         q_values_from[action] = new_q_value
         if verbose:
@@ -117,9 +102,3 @@ class QLearning(object):
             self.trainOnSingleGame(game)
 
 
-# q_learning = QLearning()
-# print(q_learning.state_action_dict)
-# print(q_learning.state_action_dict['[-1, 0, 0, -1, 0, 0, -1, 0, 1]'])
-# q_learning.updateStateQValues('[-1, 0, 0, -1, 0, 0, -1, 0, 1]')
-# print(q_learning.state_action_dict['[-1, 0, 0, -1, 0, 0, -1, 0, 1]'])
-# q_learning.trainRandomPlayers(10)
