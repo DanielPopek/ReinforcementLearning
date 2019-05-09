@@ -10,10 +10,11 @@ from matplotlib import pyplot as plt
 
 class DeepQLearningPlayer(DeepPlayer):
     # -1 ==oh, 1== cross, 0== undefined
-    def __init__(self, board, sign, train_count):
+    def __init__(self, board, sign, train_count, epochs=1000):
         DeepPlayer.__init__(self, board, sign, train_count)
         self.X_train = self.load_boards_from_file()[0]
         self.Y_train = self.load_values_from_file()[0]
+        self.epochs = epochs
 
     def load_boards_from_file(self):
         boards = []
@@ -36,7 +37,7 @@ class DeepQLearningPlayer(DeepPlayer):
         return values
 
     def train_model(self):
-        model = MLPRegressor(max_iter=1000)
+        model = MLPRegressor(max_iter=self.epochs)
         model.fit(X=self.X_train, y=self.Y_train)
         self.model = model
 

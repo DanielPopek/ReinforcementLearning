@@ -18,8 +18,8 @@ def single_qlearning_training_game(q_test, verbose=False):
     q_test.trainOnSingleGame(game, verbose=verbose)
 
 
-def save_qlearning_training_data_to_file():
-    TRAIN_COUNT = 3000
+def save_qlearning_training_data_to_file(train_count=3000):
+    TRAIN_COUNT = train_count
 
     print('Training Qlearning...')
     q_learning = QLearning()
@@ -35,11 +35,9 @@ def save_qlearning_training_data_to_file():
 
     with open('models/boards_' + str(TRAIN_COUNT), 'wb') as f:
         pickle.dump(boards, f)
-        print(boards)
 
     with open('models/values_' + str(TRAIN_COUNT), 'wb') as f:
         pickle.dump(values, f)
-        print(values)
 
 
 def save_nn_trained_model_to_file(model, file_name):

@@ -13,11 +13,14 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 class NNPlayer(DeepPlayer):
-    def __init__(self, board, sign, train_count):
+    def __init__(self, board, sign, train_count, epochs=10):
         DeepPlayer.__init__(self, board, sign, train_count)
         boards, values = self.load_data()
         self.X_train = boards
         self.Y_train = values
+        self.epochs = epochs
+
+        print(f'NN model having {train_count} training examples and {epochs} epochs')
 
     def load_data(self):
         with open('models/boards_' + str(self.training_count), 'rb') as f:
@@ -63,7 +66,7 @@ class NNPlayer(DeepPlayer):
 
     def train_model(self):
         model = self.create_nn_with_one_layer(hidd_layer=100, out_layer=9)
-        trained_model = model.fit(np.array(self.X_train), np.array(self.Y_train), epochs=10, verbose=0)
+        trained_model = model.fit(np.array(self.X_train), np.array(self.Y_train), epochs=self.epochs, verbose=0)
         self.model = model
 
     def predict(self, board):
