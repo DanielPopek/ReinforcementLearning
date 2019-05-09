@@ -127,7 +127,7 @@ def saveTrainingDataToFile():
 
 
 if __name__ == "__main__":
-    # play_train_games()
+    play_train_games()
     play_test_games_deep_player()
     # saveTrainingDataToFile()
 
