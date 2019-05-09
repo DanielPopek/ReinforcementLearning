@@ -12,19 +12,17 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
-class NNPlayer(Player):
+class NNPlayer(DeepPlayer):
     def __init__(self, board, sign, train_count):
-        Player.__init__(self, "x" if sign == CROSS else "o", board, sign)
-        boards, values = self.load_data(train_count)
+        DeepPlayer.__init__(self, board, sign, train_count)
+        boards, values = self.load_data()
         self.X_train = boards
         self.Y_train = values
-        self.model = None
-        self.FILE_NAME_SUFFIX = str(train_count)
 
-    def load_data(self, train_count):
-        with open('models/boards_' + str(train_count), 'rb') as f:
+    def load_data(self):
+        with open('models/boards_' + str(self.training_count), 'rb') as f:
             board_data = pickle.load(f)
-        with open('models/values_' + str(train_count), 'rb') as f:
+        with open('models/values_' + str(self.training_count), 'rb') as f:
             value_data = pickle.load(f)
         return board_data, value_data
 
@@ -65,15 +63,14 @@ class NNPlayer(Player):
 
     def train_model(self):
         model = self.create_nn_with_one_layer(hidd_layer=100, out_layer=9)
-        trained_model = model.fit(np.array(self.X_train), np.array(self.Y_train),
-                               validation_split=0.1, epochs=2, verbose=0)
+        trained_model = model.fit(np.array(self.X_train), np.array(self.Y_train), epochs=10, verbose=0)
         self.model = model
 
     def predict(self, board):
         prediction_values = self.model.predict(board)
         return prediction_values[0]
 
-    def nextMove(self, q_learning_table=None, verbose=False):
+    def next_move(self, q_learning_table=None, verbose=False):
         board = self.board.board
         # if self.sign == OH:  # reverse values for OH sign player
         #     board = list(np.asarray(board) * -1)

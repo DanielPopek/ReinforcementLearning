@@ -40,7 +40,7 @@ class Game(object):
         move = 0
         winner = UNKNOWN
         while winner == UNKNOWN and not self.board.isFull():
-            action = self.playerActive.nextMove(q_learning_table, verbose)
+            action = self.playerActive.next_move(q_learning_table, verbose)
             self.putHistoryTuple(self.playerActive, self.board, action)
             self.board.board[action] = self.playerActive.sign
             self.switchPlayers()
@@ -57,23 +57,8 @@ class Game(object):
             print(f'Player 1: {self.player1History}')
             print(f'Player 2: {self.player2History}')
 
-
     def get_winner(self, sign):
         if self.player1.sign == sign:
             return self.player1
         else:
             return self.player2
-
-    # def prepareSampleGame(self):
-    #     board = Board()
-    #     player1 = RandomPlayer("Random1", board, 0)
-    #     player2 = RandomPlayer("Random2", board, 1)
-    #     game = Game(board, player1, player2)
-    #     return game
-
-# board= Board()
-# player1=RandomPlayer("Random1",board,0)
-# player2 = RandomPlayer("Random2", board, 1)
-# game=Game(board,player1,player2)
-#
-# game.play_game(True)

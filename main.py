@@ -84,11 +84,12 @@ def single_deep_qlearning_testing_game(player, x_deep_player=True, verbose=False
     return game.board.getWinningSign()
 
 
-def play_deep_qlearning_test_games(deep_learning_player_type='DeepQLearning', train_count=3000):
+def play_deep_qlearning_test_games(deep_learning_player_type='DeepQLearning', train_count=3000, verbose=True):
     TEST_COUNT = 1000
     is_deep_player_cross = True
 
-    print('\nTraining...')
+    if verbose:
+        print('\nTraining...')
     board = Board()
     if deep_learning_player_type == 'DeepQLearning':
         player = DeepQLearningPlayer(board, CROSS if is_deep_player_cross else OH, train_count)
@@ -96,15 +97,21 @@ def play_deep_qlearning_test_games(deep_learning_player_type='DeepQLearning', tr
         player = NNPlayer(board, CROSS if is_deep_player_cross else OH, train_count)
     player.train_model()
 
-    print('\nTesting...')
+    if verbose:
+        print('Testing...')
     wins = [0, 0, 0]
     for i in range(TEST_COUNT):
         winner = single_deep_qlearning_testing_game(player, x_deep_player=is_deep_player_cross, verbose=False)
         wins[winner + 1] += 1
-    print_winning_statistics(wins, deep_learning_player_type)
+
+    if verbose:
+        print_winning_statistics(wins, deep_learning_player_type)
+
+    return wins
 
 
 if __name__ == "__main__":
     deep_learning_player_types = ['DeepQLearning', 'NN']
     play_deep_qlearning_test_games(deep_learning_player_type=deep_learning_player_types[0])
+    play_deep_qlearning_test_games(deep_learning_player_type=deep_learning_player_types[1])
 

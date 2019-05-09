@@ -14,3 +14,18 @@ class Player(object):
 
     def setBoard(self,board):
         self.board=board
+
+
+class DeepPlayer(Player):
+    def __init__(self, board, sign, train_count):
+        Player.__init__(self, "x" if sign == CROSS else "o", board, sign)
+        self.X_train = None
+        self.Y_train = None
+        self.model = None
+        self.training_count = str(train_count)
+
+    def train_model(self):
+        return NotImplementedError
+
+    def predict(self, board):
+        return NotImplementedError
