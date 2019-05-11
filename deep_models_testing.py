@@ -9,7 +9,7 @@ deprecation._PRINT_DEPRECATION_WARNINGS = False
 
 
 def single_deep_learning_run(deep_learning_player_type='DeepQLearning', train_count=3000,
-                             is_deep_player_cross=True, epochs=100, verbose=True):
+                             is_deep_player_cross=True, epochs=100, data_shape=9, verbose=True):
     TEST_COUNT = 1000
 
     if verbose:
@@ -18,7 +18,7 @@ def single_deep_learning_run(deep_learning_player_type='DeepQLearning', train_co
     if deep_learning_player_type == 'DeepQLearning':
         player = DeepQLearningPlayer(board, CROSS if is_deep_player_cross else OH, train_count, epochs)
     if deep_learning_player_type == 'NN':
-        player = NNPlayer(board, CROSS if is_deep_player_cross else OH, train_count, epochs)
+        player = NNPlayer(board, CROSS if is_deep_player_cross else OH, train_count, epochs, data_in=data_shape)
     player.train_model()
 
     if verbose:
@@ -35,23 +35,26 @@ def single_deep_learning_run(deep_learning_player_type='DeepQLearning', train_co
 
 
 def run_deep_learning_tests(deep_learning_player_type, verbose=True):
-    TRAIN_COUNT = [100, 200, 500, 1000, 2000]  # , 3000, 5000, 7500, 10000]
+    TRAIN_COUNT = [100, 200, 500, 1000, 2000, 3000, 5000, 7500, 10000]
     epochs = [10]
 
-    iterations = 5
+    iterations = 10
     is_deep_player_x = True
-    file_name = f'{deep_learning_player_type}_iters{iterations}_isX_{str(is_deep_player_x)}_TRAIN_COUNT'
+    in_shape = 27
 
-    df = pd.DataFrame(columns=['i', 'train_count', 'epochs', 'optimizer', 'loss', 'is_x', 'x_wins', 'o_wins', 'draws'])
+    file_name = f'{deep_learning_player_type}_in{in_shape}_iters{iterations}_isx{str(is_deep_player_x)}_' \
+        f'lossAdam_optMSE_epochs{epochs[0]}_TC'
+
+    df = pd.DataFrame(columns=['i', 'train_count', 'epochs', 'x_wins', 'o_wins', 'draws'])
 
     for train_count in TRAIN_COUNT:
         for iters in epochs:
             for i in range(iterations):
                 wins = single_deep_learning_run(deep_learning_player_type=deep_learning_player_type,
                                                 is_deep_player_cross=is_deep_player_x, train_count=train_count,
-                                                epochs=iters, verbose=verbose)
-                df = df.append({'i': i, 'train_count': train_count, 'epochs': iters, 'optimizer': 'adam', 'loss': 'mse',
-                                'is_x': True, 'x_wins': wins[2], 'o_wins': wins[0], 'draws': wins[1]}, ignore_index=True)
+                                                epochs=iters, data_shape=in_shape, verbose=verbose)
+                df = df.append({'i': i, 'train_count': train_count, 'epochs': iters,
+                                'x_wins': wins[2], 'o_wins': wins[0], 'draws': wins[1]}, ignore_index=True)
 
     df.to_csv(file_name + '.csv')
     return file_name
@@ -84,7 +87,7 @@ def plot_model_results(file_name):
 
 
 if __name__ == '__main__':
-    # file_name = run_deep_learning_tests('NN')
+    file_name = run_deep_learning_tests('NN')
 
     file_name = 'NN_iters5_isX_True_TRAIN_COUNT'
     plot_model_results(file_name)
