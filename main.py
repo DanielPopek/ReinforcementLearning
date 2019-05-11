@@ -112,9 +112,9 @@ def play_deep_qlearning_test_games(deep_learning_player_type='DeepQLearning', tr
 
 
 if __name__ == "__main__":
-    play_qlearning_train_and_test_games()
+    # play_qlearning_train_and_test_games()
 
     deep_learning_player_types = ['DeepQLearning', 'NN']
-    play_deep_qlearning_test_games(deep_learning_player_type=deep_learning_player_types[0])
+    # play_deep_qlearning_test_games(deep_learning_player_type=deep_learning_player_types[0])
     play_deep_qlearning_test_games(deep_learning_player_type=deep_learning_player_types[1])
 
