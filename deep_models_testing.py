@@ -35,15 +35,15 @@ def single_deep_learning_run(deep_learning_player_type='DeepQLearning', train_co
 
 
 def run_deep_learning_tests(deep_learning_player_type, verbose=True):
-    TRAIN_COUNT = [100, 200, 500, 1000, 2000, 3000, 5000, 7500, 10000]
-    epochs = [10]
+    TRAIN_COUNT = [5000]  # [100, 200, 500, 1000, 2000, 3000, 5000, 7500, 10000]
+    epochs = [1, 2, 3, 5, 8, 10, 15, 20, 25]
 
     iterations = 10
-    is_deep_player_x = True
-    in_shape = 27
+    is_deep_player_x = False
+    in_shape = 9
 
     file_name = f'{deep_learning_player_type}_in{in_shape}_iters{iterations}_isx{str(is_deep_player_x)}_' \
-        f'lossAdam_optMSE_epochs{epochs[0]}_TC'
+        f'lossAdam_optMSE_TC{TRAIN_COUNT[0]}_EPOCHS'
 
     df = pd.DataFrame(columns=['i', 'train_count', 'epochs', 'x_wins', 'o_wins', 'draws'])
 
@@ -88,12 +88,10 @@ def plot_model_results(file_name):
 
 if __name__ == '__main__':
     file_name = run_deep_learning_tests('NN')
-
-    file_name = 'NN_iters5_isX_True_TRAIN_COUNT'
     plot_model_results(file_name)
 
 
-    ''' Qlearning trainings saved to file '''
+    # ''' Qlearning trainings saved to file '''
     # TRAIN_COUNT = [100, 200, 500, 1000, 2000, 3000, 5000, 7500, 10000]
     # for tc in TRAIN_COUNT:
     #     save_qlearning_training_data_to_file(tc)
