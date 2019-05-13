@@ -13,15 +13,17 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 class NNPlayer(DeepPlayer):
-    def __init__(self, board, sign, train_count, epochs=10, data_in=27):
+    def __init__(self, board, sign, train_count, epochs=10, data_in=27, filter=False):
         DeepPlayer.__init__(self, board, sign, train_count)
         boards, values = self.load_data()
         self.X_train = boards
         self.Y_train = values
         self.epochs = epochs
         self.x_shape = data_in
+        self.filtering = filter
 
-        print(f'NN model having {train_count} training examples and {epochs} epochs with in-size {self.x_shape}')
+        print(f'NN model having {train_count} training examples and {epochs} epochs with in-size {self.x_shape}'
+              f' with{"" if self.filtering else "out"} filtering')
 
     def load_data(self):
         with open('models/boards_' + str(self.training_count), 'rb') as f:
@@ -77,17 +79,21 @@ class NNPlayer(DeepPlayer):
                         + [1 if j == 0 else 0 for j in board]
 
     def split_data_18in_1out(self):
+        without_empty_values = self.filtering
         x_splitted, y_splitted = [], []
         for i, board in enumerate(self.X_train):
             for j in range(len(self.Y_train[i])):
-                if self.Y_train[i][j] > -1:
-                    x_splitted.append(board + self.Y_train[i])
+                if self.Y_train[i][j] > -1 or (not without_empty_values and self.Y_train[i][j] == -1):
+                    action = [0 for _ in range(9)]
+                    action[j] = 1
+                    x_splitted.append(board + action)
                     y_splitted.append(self.Y_train[i][j])
         self.X_train = x_splitted
         self.Y_train = y_splitted
 
     def train_model(self):
-        # self.filter_and_shuffle_data()  # not working
+        if self.filtering:
+            self.filter_and_shuffle_data()  # better not to use :D
 
         if self.x_shape == 18:
             self.split_data_18in_1out()
@@ -101,27 +107,44 @@ class NNPlayer(DeepPlayer):
 
     def split_board(self, board):
         if self.x_shape == 27:
-            new_board = [1 if j == -1 else 0 for j in board] \
-                        + [1 if j == 1 else 0 for j in board] \
-                        + [1 if j == 0 else 0 for j in board]
-        # elif self.x_shape == 18:
-        #     found, i = True, 0
-        #     while found:
-        #         if list(board) == self.X_train[i][:9]:
-        #             found = False
-        #         i = i+1
-        #     new_board = self.X_train[i-1]
+            new_board = [[1 if j == -1 else 0 for j in board]
+                         + [1 if j == 1 else 0 for j in board]
+                         + [1 if j == 0 else 0 for j in board]]
+        elif self.x_shape == 18:
+            new_board = []
+            for i in range(9):
+                action = [0 for _ in range(9)]
+                action[i] = 1
+                x = list(board) + action
+                if self.filtering:
+                    if board[i] == 0:
+                        new_board.append(x)
+                else:
+                    new_board.append(x)
         else:
-            new_board = board
-        return np.array([new_board])
+            new_board = [board]
+        return np.array(new_board)
 
     def predict(self, board):
         board = self.split_board(board[0])
 
         prediction_values = self.model.predict(board)
-        if type(prediction_values) is float:
-            return [prediction_values]
+        if self.x_shape == 18:
+            prediction_values = self.adjust_18in_predictions(board, prediction_values)
         return prediction_values[0]
+
+    def adjust_18in_predictions(self, boards, prediction_values):
+        prediction_values = list(prediction_values)
+        if self.filtering:
+            indices = []
+            for b in boards:
+                indices.append(np.where(b[9:] == 1)[0][0])
+
+            missing_indices = [x for x in range(9) if x not in indices]
+            for i in missing_indices:
+                prediction_values.insert(i, -1)  # lowest value
+
+        return np.array(prediction_values).reshape(1, -1)
 
     def next_move(self, q_learning_table=None, verbose=False):
         board = self.board.board
