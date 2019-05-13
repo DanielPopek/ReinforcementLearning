@@ -95,7 +95,7 @@ def play_deep_qlearning_test_games(deep_learning_player_type='DeepQLearning', tr
     if deep_learning_player_type == 'DeepQLearning':
         player = DeepQLearningPlayer(board, CROSS if is_deep_player_cross else OH, train_count)
     if deep_learning_player_type == 'NN':
-        player = NNPlayer(board, CROSS if is_deep_player_cross else OH, train_count)
+        player = NNPlayer(board, CROSS if is_deep_player_cross else OH, train_count, data_in=18, filter=True)
     player.train_model()
 
     if verbose:
@@ -122,5 +122,3 @@ if __name__ == "__main__":
     deep_learning_player_types = ['DeepQLearning', 'NN']
     # play_deep_qlearning_test_games(deep_learning_player_type=deep_learning_player_types[0])
     play_deep_qlearning_test_games(deep_learning_player_type=deep_learning_player_types[1])
-
-
