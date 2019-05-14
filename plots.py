@@ -71,4 +71,6 @@ def plot_single_model_result_pie(file_name, param_value=5000):
 
 if __name__ == '__main__':
     file_name = 'NN_in9_iters10_isxTrue_lossAdam_optMSE_epochs10_TC.csv'
-    plot_single_model_result_pie(file_name)
+    # file_name='NN_in18_iters10_isxFalse_lossAdam_optMSE_FILTERING_epochs10_TC2.csv'
+    plot_single_model_result_pie(file_name,param_value=100)
+    plot_single_model_results_linear(file_name)

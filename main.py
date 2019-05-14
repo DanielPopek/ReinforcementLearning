@@ -7,6 +7,10 @@ from random_player import RandomPlayer
 import tensorflow.python.util.deprecation as deprecation
 deprecation._PRINT_DEPRECATION_WARNINGS = False
 
+import pandas as pd
+import seaborn as sns
+sns.set()
+
 
 def get_player_type(player):
     return player.__class__
@@ -43,7 +47,7 @@ def single_qlearning_testing_game(q_test, x_qlearning=True, single_q_player=True
     return game.board.getWinningSign()
 
 
-def play_qlearning_train_and_test_games(train_count=3000):
+def play_qlearning_train_and_test_games(train_count=3000,x_qlearning=True):
     TRAIN_COUNT = train_count
     TEST_COUNT = 1000
 
@@ -59,9 +63,32 @@ def play_qlearning_train_and_test_games(train_count=3000):
     print('\nTesting...')
     wins = [0, 0, 0]
     for i in range(TEST_COUNT):
-        winner = single_qlearning_testing_game(q_learning, verbose=False, single_q_player=False)
+        winner = single_qlearning_testing_game(q_learning, x_qlearning=x_qlearning,verbose=False, single_q_player=False)
         wins[winner + 1] += 1
     print_winning_statistics(wins)
+    return wins
+
+def run_train_size_impact_test():
+    TRAIN_COUNT = [200, 1000,  3000, 5000, 10000,15000,20000,25000]
+    Q_X = [True,False]
+
+
+    # need to change ending of file_name by hand
+    file_name = f'Q_LEARNING_TRAIN_COUNT_IMPACT'
+
+    df = pd.DataFrame(columns=['train_count','x_starts', 'x_wins', 'o_wins', 'draws'])
+    print(df)
+
+    for train_count in TRAIN_COUNT:
+        for q_x in Q_X:
+                wins = play_qlearning_train_and_test_games(train_count=train_count,x_qlearning=q_x)
+                print(wins)
+                df = df.append({ 'train_count': train_count,'x_starts':q_x,'x_wins': wins[2], 'o_wins': wins[0], 'draws': wins[1]}, ignore_index=True)
+
+    df.to_csv('./csv_files/' + file_name + '.csv')
+    return file_name
+
+
 
 
 ''' Deep Q learning - sklearn and keras '''
@@ -116,9 +143,9 @@ if __name__ == "__main__":
     # play_train_games()
     # play_test_games_deep_player()
     # saveTrainingDataToFile()
+    run_train_size_impact_test()
+    # play_qlearning_train_and_test_games(train_count=30000)
 
-    play_qlearning_train_and_test_games()
-
-    deep_learning_player_types = ['DeepQLearning', 'NN']
-    # play_deep_qlearning_test_games(deep_learning_player_type=deep_learning_player_types[0])
-    play_deep_qlearning_test_games(deep_learning_player_type=deep_learning_player_types[1])
+    # deep_learning_player_types = ['DeepQLearning', 'NN']
+    # # play_deep_qlearning_test_games(deep_learning_player_type=deep_learning_player_types[0])
+    # play_deep_qlearning_test_games(deep_learning_player_type=deep_learning_player_types[1])

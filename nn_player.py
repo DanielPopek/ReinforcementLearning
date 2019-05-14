@@ -13,7 +13,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 class NNPlayer(DeepPlayer):
-    def __init__(self, board, sign, train_count, epochs=10, data_in=27, filter=False):
+    def __init__(self, board, sign, train_count, epochs=10, data_in=27, filter=False, optimizer='adam', loss_type='mean_squared_error', hidden_size=100, hidden_layers=1):
         DeepPlayer.__init__(self, board, sign, train_count)
         boards, values = self.load_data()
         self.X_train = boards
@@ -21,6 +21,10 @@ class NNPlayer(DeepPlayer):
         self.epochs = epochs
         self.x_shape = data_in
         self.filtering = filter
+        self.loss_type=loss_type
+        self.optimizer=optimizer
+        self.hidden_size=hidden_size
+        self.hidden_layers=hidden_layers
 
         print(f'NN model having {train_count} training examples and {epochs} epochs with in-size {self.x_shape}'
               f' with{"" if self.filtering else "out"} filtering')
@@ -72,6 +76,15 @@ class NNPlayer(DeepPlayer):
         model.compile(optimizer=optimizer, loss=loss)
         return model
 
+    def create_nn_with_two_hidden_layers(self, hidd_layer, out_layer, optimizer='adam', loss='mean_squared_error'):
+        model = tf.keras.models.Sequential([
+            tf.keras.layers.Dense(hidd_layer, activation=tf.nn.relu),
+            tf.keras.layers.Dense(hidd_layer, activation=tf.nn.relu),
+            tf.keras.layers.Dense(out_layer, activation=tf.nn.softmax)
+        ])
+        model.compile(optimizer=optimizer, loss=loss)
+        return model
+
     def split_data_27in_9out(self):
         for i, board in enumerate(self.X_train):
             self.X_train[i] = [1 if j == -1 else 0 for j in board] \
@@ -101,7 +114,10 @@ class NNPlayer(DeepPlayer):
             self.split_data_27in_9out()
 
         out_layer = 9 if self.x_shape != 18 else 1
-        model = self.create_nn_with_one_layer(hidd_layer=100, out_layer=out_layer)
+        if(self.hidden_layers==1):
+            model = self.create_nn_with_one_layer(hidd_layer=self.hidden_size, out_layer=out_layer, optimizer=self.optimizer, loss=self.loss_type)
+        else:
+            model = self.create_nn_with_two_hidden_layers(hidd_layer=self.hidden_size, out_layer=out_layer,optimizer=self.optimizer, loss=self.loss_type)
         trained_model = model.fit(np.array(self.X_train), np.array(self.Y_train), epochs=self.epochs, verbose=0)
         self.model = model
 
