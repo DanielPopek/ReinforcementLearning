@@ -71,22 +71,21 @@ def loss_impact_test(deep_learning_player_type, verbose=True):
 
     epochs = [10]  # [1, 2, 3, 5, 8, 10, 15, 20, 25]
 
-    iterations = 10
-    is_deep_player_x = True
+    iterations = 5
+    is_deep_player_x = False
     in_shape = 9  # or 9 or 27
     filtering = False
 
     # need to change ending of file_name by hand
     file_name = f'{deep_learning_player_type}_in{in_shape}_iters{iterations}_isx{str(is_deep_player_x)}_' \
-        f'lossAdam_optMSE{"_FILTERING" if filtering else ""}_epochs{epochs[0]}_LOSS'
+        f'lossAdam_optMSE{"_FILTERING" if filtering else ""}_epochs{epochs[0]}_LOSS_X_SECOND'
 
     df = pd.DataFrame(columns=['i', 'train_count', 'epochs', 'x_wins', 'o_wins', 'draws','loss','in_shape'])
 
     for loss in LOSS_TYPES:
         for input_shape in INPUT_SHAPES:
             for i in range(iterations):
-                if(verbose):
-                    print(f'LOSS {loss} - IN_SHAPE {input_shape}')
+                print(f'{i} LOSS {loss} - IN_SHAPE {input_shape}')
                 wins = single_deep_learning_run(deep_learning_player_type=deep_learning_player_type,
                                                 is_deep_player_cross=is_deep_player_x, train_count=5000,
                                                 epochs=5, data_shape=input_shape, filter=filtering, optimizer='adam', loss_type=loss , hidden_size=100, hidden_layers=1, verbose=verbose)
@@ -133,21 +132,20 @@ def hidden_size_impact_test(deep_learning_player_type, verbose=True):
 
     epochs = [10]  # [1, 2, 3, 5, 8, 10, 15, 20, 25]
 
-    iterations = 10
-    is_deep_player_x = True
+    iterations = 5
+    is_deep_player_x = False
     in_shape = 9  # or 9 or 27
     filtering = False
 
     # need to change ending of file_name by hand
     file_name = f'{deep_learning_player_type}_in{in_shape}_iters{iterations}_isx{str(is_deep_player_x)}_' \
-        f'lossAdam_optMSE{"_FILTERING" if filtering else ""}_epochs{epochs[0]}_HIDDEN_SIZE'
+        f'lossAdam_optMSE{"_FILTERING" if filtering else ""}_epochs{epochs[0]}_HIDDEN_SIZE_X_SECOND'
 
     df = pd.DataFrame(columns=['i', 'train_count', 'epochs', 'x_wins', 'o_wins', 'draws','hiden_size','in_shape'])
 
     for size in HIDDEN_SIZES:
             for i in range(iterations):
-                if(verbose):
-                    print(f'HIDDEN LAYER SIZE {size} ')
+                print(f'HIDDEN LAYER SIZE {size} ')
                 wins = single_deep_learning_run(deep_learning_player_type=deep_learning_player_type,
                                                 is_deep_player_cross=is_deep_player_x, train_count=5000,
                                                 epochs=10, data_shape=in_shape, filter=filtering, optimizer='adam', loss_type='mean_squared_error' , hidden_size=size, hidden_layers=1, verbose=verbose)
@@ -195,21 +193,20 @@ def filter_impact_test(deep_learning_player_type, verbose=True):
     epochs = [10]  # [1, 2, 3, 5, 8, 10, 15, 20, 25]
 
     iterations = 5
-    is_deep_player_x = True
+    is_deep_player_x = False
     in_shape = 9  # or 9 or 27
     filtering = False
 
     # need to change ending of file_name by hand
     file_name = f'{deep_learning_player_type}_in{in_shape}_iters{iterations}_isx{str(is_deep_player_x)}_' \
-        f'lossAdam_optMSE{"_FILTERING" if filtering else ""}_epochs{epochs[0]}_FILTER'
+        f'lossAdam_optMSE{"_FILTERING" if filtering else ""}_epochs{epochs[0]}_FILTER_X_SECOND'
 
     df = pd.DataFrame(columns=['i', 'train_count', 'epochs', 'x_wins', 'o_wins', 'draws','loss','filter','in_shape'])
 
     for input_shape in INPUT_SHAPES:
         for filter in FILTER:
             for i in range(iterations):
-                if(verbose):
-                    print(f'IN SHAPE {in_shape} - FILTER {filter}')
+                print(f'IN SHAPE {in_shape} - FILTER {filter}')
                 wins = single_deep_learning_run(deep_learning_player_type=deep_learning_player_type,
                                                 is_deep_player_cross=is_deep_player_x, train_count=5000,
                                                 epochs=5, data_shape=input_shape, filter=filter, optimizer='adam', loss_type='mean_squared_error' , hidden_size=100, hidden_layers=1, verbose=verbose)
@@ -221,14 +218,14 @@ def filter_impact_test(deep_learning_player_type, verbose=True):
 
 def scheduled_test():
     # file_name = loss_impact_test('NN',verbose=False)
-    file_name = optimizer_impact_test('NN', verbose=False)
-    file_name = hidden_size_impact_test('NN', verbose=False)
-    file_name = hidden_size_impact_test_with_2_layers('NN', verbose=False)
-    file_name = filter_impact_test('NN', verbose=False)
+    file_name = optimizer_impact_test('NN', verbose=False)#Marta
+    file_name = hidden_size_impact_test('NN', verbose=False)#Marta
+    file_name = hidden_size_impact_test_with_2_layers('NN', verbose=False)#Daniel
+    file_name = filter_impact_test('NN', verbose=False)#Daniel
 
 if __name__ == '__main__':
     # file_name = run_deep_learning_tests('NN')
-    file_name = loss_impact_test('NN')
+    file_name = loss_impact_test('NN',verbose=False)
     # ''' Qlearning trainings saved to file '''
     # TRAIN_COUNT = [100, 200, 500, 1000, 2000, 3000, 5000, 7500, 10000]
     # for tc in TRAIN_COUNT:
