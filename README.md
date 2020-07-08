@@ -8,7 +8,7 @@ The aim of this project was to implement Reinforcement Learning approach for che
 
 Results from Q-learning table were then used to train neural network classifier enabling more generalized prediction for player's next actions. 
 
-More detailed problem description and outcoms of parameters research included in RESEARCH.pdf (document in Polish). 
+More detailed problem description and outcoms of parameters research included in [RESEARCH.pdf](https://github.com/DanielPopek/ReinforcementLearning/blob/master/RESEARCH.pdf) (document in Polish). 
 
 Authors: Daniel Popek, Marta Maślankowska  
 
