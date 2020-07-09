@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The aim of this project was to implement Reinforcement Learning approach for chess game simulator. Q-Learning algorithm from following publication was used:
+The aim of this project was to implement Reinforcement Learning approach for Tic Tac Toe game simulator. Q-Learning algorithm from following publication was used:
 
 > Watkins, Christopher JCH, and Peter Dayan. "Q-learning." Machine learning 8.3-4 (1992): 279-292. 
 
